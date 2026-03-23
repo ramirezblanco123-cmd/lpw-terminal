@@ -177,34 +177,13 @@ td{padding:9px 11px;}
 
 <div class="hdr">
   <div>
-    <div class="live-badge"><span class="dot"></span>POLYGON.IO STARTER · MOMENTUM SCORE · BULL & BEAR · FULL MARKET SCAN</div>
+    <div class="live-badge"><span class="dot"></span>POLYGON.IO STARTER · MOMENTUM SCORE · BULL & BEAR</div>
     <h1>Sector & Stock Momentum Analysis</h1>
-    <p class="sub">Score 0–100 = conviction in current direction · Both sides ranked equally · Auto-runs at 7:00 AM daily</p>
+    <p class="sub">Score 0–100 = conviction in current direction · 100 = perfect bull OR perfect bear · Both sides ranked equally</p>
   </div>
   <div style="text-align:right">
     <button class="btn-p" id="runBtn" onclick="run()">Run Analysis</button>
     <div class="sub mono" style="margin-top:5px" id="dateEl"></div>
-  </div>
-</div>
-
-<!-- Daily schedule bar -->
-<div id="scheduleBar" style="background:var(--bg2);border:0.5px solid var(--b2);border-radius:8px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-  <div style="display:flex;align-items:center;gap:6px">
-    <span style="font-size:16px">⏰</span>
-    <div>
-      <div style="font-size:12px;font-weight:600">Daily Auto-Scan — 7:00 AM</div>
-      <div style="font-size:11px;color:var(--text2);font-family:var(--mono)" id="schedNextRun">Calculating…</div>
-    </div>
-  </div>
-  <div style="font-size:10px;font-family:var(--mono);color:var(--text2);line-height:1.6;max-width:340px">
-    <strong>Data freshness:</strong> Pre-market (7 AM) = prior day final · During market = real-time delayed · After close = today's settled
-  </div>
-  <div style="margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-    <div id="countdownWrap" style="display:none;background:#EAF3DE;border-radius:6px;padding:6px 12px;font-family:var(--mono);font-size:13px;color:#175404;font-weight:700">
-      Auto-starting in <span id="countdownNum">10</span>s &nbsp;
-      <button onclick="cancelAutoRun()" style="font-size:11px;padding:2px 8px;background:transparent;border:1px solid #3B6D11;border-radius:4px;color:#3B6D11;cursor:pointer;font-family:var(--mono)">Cancel</button>
-    </div>
-    <div id="lastRunWrap" style="font-size:11px;font-family:var(--mono);color:var(--text2)" id="lastRunEl"></div>
   </div>
 </div>
 
@@ -261,28 +240,6 @@ td{padding:9px 11px;}
       <option value="bear">Bearish only</option>
     </select>
   </div>
-  <div class="cg"><label>Sector</label>
-    <select id="sectorSel">
-      <option value="all">All Sectors</option>
-      <option value="Technology">Technology (XLK)</option>
-      <option value="Comm. Services">Comm. Services (XLC)</option>
-      <option value="Financials">Financials (XLF)</option>
-      <option value="Consumer Discr.">Consumer Discr. (XLY)</option>
-      <option value="Healthcare">Healthcare (XLV)</option>
-      <option value="Industrials">Industrials (XLI)</option>
-      <option value="Materials">Materials (XLB)</option>
-      <option value="Consumer Staples">Consumer Staples (XLP)</option>
-      <option value="Real Estate">Real Estate (XLRE)</option>
-      <option value="Utilities">Utilities (XLU)</option>
-      <option value="Energy">Energy (XLE)</option>
-    </select>
-  </div>
-  <div class="cg"><label>View</label>
-    <select id="viewSel">
-      <option value="list">Best picks list</option>
-      <option value="bysector">By sector (top 3 each)</option>
-    </select>
-  </div>
   <div class="cg"><label>Max Results</label>
     <select id="maxR"><option value="20">Top 20</option><option value="30" selected>Top 30</option><option value="50">Top 50</option></select>
   </div>
@@ -306,18 +263,16 @@ td{padding:9px 11px;}
 <div id="logEl"></div>
 
 <div id="idleEl" class="idle">
-  <h2>Best of the best — bull AND bear · Full market scan</h2>
-  <p>Every morning at 7:00 AM this page auto-starts the scan. Open it in Chrome via the Task Scheduler shortcut and it runs itself. Scans all ~12,000 US tickers, filters for option liquidity, scores every stock 0–100 across 5 factors, and shows the highest-conviction setups on both sides.</p>
+  <h2>Best of the best — bull AND bear</h2>
+  <p>A stock breaking down with perfect bearish signals scores 95/100 just like a breakout bull. The score measures <strong>conviction in the current direction</strong>, not how bullish something is. Both sides are ranked, filtered, and shown.</p>
   <div class="pills">
-    <span class="pill">⏰ Auto-runs at 7 AM</span>
-    <span class="pill">~12,000 tickers scanned</span>
     <span class="pill">Direction-aware scoring</span>
-    <span class="pill">Option liquidity filter</span>
-    <span class="pill">GEX · Max Pain · DEX</span>
-    <span class="pill">Unusual flow detection</span>
+    <span class="pill">Strong bears = high score</span>
+    <span class="pill">Live IV & Greeks</span>
+    <span class="pill">News sentiment</span>
+    <span class="pill">Full market scan</span>
   </div>
-  <button class="btn-p" onclick="run()">Run now</button>
-</div>
+  <button class="btn-p" onclick="run()">Run analysis</button>
 </div>
 
 </div>
@@ -383,28 +338,13 @@ let S={sectors:[],stocks:[],volume:[],market:null,log:[],tab:"sectors",
 
 document.getElementById("dateEl").textContent =
   new Date().toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"});
-// Update dateEl after each run to show exact fetch time
-function updateFetchTime(){
-  const now=new Date();
-  document.getElementById("dateEl").textContent=
-    now.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})+" "+
-    now.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"})+" — LIVE";
-}
 
 /* ══════════════════════════════════════════
    API
    ══════════════════════════════════════════ */
 async function api(path){
   const sep=path.includes("?")?"&":"?";
-  // _cb = current minute timestamp — forces a fresh network hit each new run.
-  // After-hours data will differ from the morning scan because the grouped
-  // daily bars update throughout the day as trades settle.
-  const cb=Math.floor(Date.now()/60000);
-  const url=`${BASE}${path}${sep}apiKey=${KEY}&_cb=${cb}`;
-  const r=await fetch(url,{
-    cache:"no-store",
-    headers:{"Cache-Control":"no-cache, no-store, must-revalidate","Pragma":"no-cache"}
-  });
+  const r=await fetch(`${BASE}${path}${sep}apiKey=${KEY}`);
   if(!r.ok) throw new Error(`HTTP ${r.status}`);
   return r.json();
 }
@@ -645,9 +585,8 @@ async function run(){
   const minV  = parseInt(document.getElementById("minV").value)||500000;
   const minMS = parseInt(document.getElementById("minMS").value)||45;
   const minVS = parseFloat(document.getElementById("minVS").value)||1.2;
-  const dirSel   = document.getElementById("dirSel").value;
-  const sectorSel= document.getElementById("sectorSel").value;
-  const maxR     = parseInt(document.getElementById("maxR").value)||30;
+  const dirSel= document.getElementById("dirSel").value;
+  const maxR  = parseInt(document.getElementById("maxR").value)||30;
 
   S={sectors:[],stocks:[],volume:[],market:null,log:[],tab:"sectors",
     phase:"running",dataDate:"",scanned:0,passed:0,srt:"mscore",srtDir:-1};
@@ -658,9 +597,7 @@ async function run(){
     const date1=prevDay(1),date6=prevDay(6),from=monthsAgo(14),to=date1;
 
     /* ── 1. Full market grouped daily + sector snapshots ──────── */
-    const fetchTime=new Date();
-    const fetchLabel=fetchTime.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit",second:"2-digit"})+" "+fetchTime.toLocaleDateString("en-US",{month:"short",day:"numeric"});
-    push(`Fresh fetch started at ${fetchLabel} — cache bypassed`);
+    push("Loading full market data…");
     document.getElementById("spinSub").textContent="2 grouped daily calls + 1 snapshot";
 
     const [g1r,g6r]=await Promise.all([
@@ -792,10 +729,6 @@ async function run(){
       if(dirSel==="bull"&&!isBull)continue;
       if(dirSel==="bear"&&isBull)continue;
 
-      // Sector filter — only include stocks whose sector is known and matches
-      const stockSector=SECTOR_OF[sym]||"—";
-      if(sectorSel!=="all"&&stockSector!==sectorSel)continue;
-
       // Compute 5 factors — direction-aware
       // F1: SMA proxy (price vs VWAP + 5d trend)
       let f1;
@@ -857,7 +790,7 @@ async function run(){
     else S.stocks=[...bullCands.slice(0,half),...bearCands.slice(0,half)]
       .sort((a,b)=>b.mscore-a.mscore);
 
-    push(`Bulls: ${bullCands.length} · Bears: ${bearCands.length} · Sector: ${sectorSel==="all"?"All":sectorSel} · Showing ${S.stocks.length}`, "ok");
+    push(`Bulls: ${bullCands.length} · Bears: ${bearCands.length} · Showing ${S.stocks.length} (${dirSel==="both"?"best "+half+" each":"filtered"})`, "ok");
     if(bullCands[0]) push(`Top bull: ${bullCands[0].symbol} ${bullCands[0].mscore}/100`, "ok");
     if(bearCands[0]) push(`Top bear: ${bearCands[0].symbol} ${bearCands[0].mscore}/100`, "ok");
     S.tab="stocks"; renderAll();
@@ -1170,7 +1103,6 @@ async function run(){
     push(`Liquidity filter: removed ${removedCount} illiquid stocks from Momentum Picks — ${S.stocks.length} remain`, "ok");
 
     S.tab="stocks"; S.phase="done";
-    updateFetchTime();
     const filtered2=volTargets.length-S.volume.length;
     push(`Volume analysis complete — ${S.volume.length} liquid stocks · ${filtered2} rejected (OI <1K, opt vol <1K, or stock vol <1M)`, "ok");
     push(`Unusual flows: ${S.volume.reduce((s,v)=>s+v.topUnusual.length,0)} contracts across ${S.volume.length} stocks`,"ok");
@@ -1321,11 +1253,6 @@ function rSectors(){
 /* ── Stock table ───────────────────────── */
 function rStocks(){
   if(!S.stocks.length) return `<div class="empty"><p style="color:var(--text2)">No stocks passed liquidity filters. Requirements: stock vol ≥1M/day · total OI ≥1,000 · call OR put volume ≥1,000 today. Try lowering Min Score or Min Vol Surge.</p></div>`;
-
-  // ── By Sector view ───────────────────────────────────────────
-  const viewSel=document.getElementById("viewSel")?.value||"list";
-  if(viewSel==="bysector") return rStocksBySector();
-
   const{srt,srtDir}=S;
   const arr=col=>srt===col?(srtDir===-1?" ▼":" ▲"):"";
   const th=(c,l)=>`<th onclick="sortBy('${c}')" class="${srt===c?"srt":""}">${l}${arr(c)}</th>`;
@@ -1424,127 +1351,6 @@ function rStocks(){
       <span style="margin-left:auto;font-family:var(--mono)">Hover dots for factor detail · click headers to sort · ${S.dataDate}</span>
     </div>
   </div>`;
-}
-
-/* ── By Sector view ───────────────────────── */
-function rStocksBySector(){
-  const sectorSel=document.getElementById("sectorSel")?.value||"all";
-
-  // All 11 sectors in display order
-  const SECTOR_ORDER=["Technology","Comm. Services","Financials","Consumer Discr.",
-    "Healthcare","Industrials","Materials","Consumer Staples","Real Estate","Utilities","Energy"];
-
-  // Group stocks by sector
-  const bySecMap={};
-  S.stocks.forEach(s=>{
-    const sec=s.sector==="—"?"Unknown":s.sector;
-    if(!bySecMap[sec])bySecMap[sec]=[];
-    bySecMap[sec].push(s);
-  });
-
-  // Decide which sectors to show
-  const sectorsToShow = sectorSel!=="all"
-    ? [sectorSel]
-    : SECTOR_ORDER.filter(s=>bySecMap[s]&&bySecMap[s].length);
-
-  if(!sectorsToShow.length)
-    return `<div class="empty"><p style="color:var(--text2)">No stocks found for the selected filters.</p></div>`;
-
-  // Sector score lookup for the header badge
-  const secScoreMap={};
-  S.sectors.forEach(s=>{secScoreMap[s.name]={score:s.mscore,dir:s.dir,isBull:s.isBull};});
-
-  const blocks=sectorsToShow.map(secName=>{
-    const stocks=bySecMap[secName]||[];
-    if(!stocks.length)return"";
-
-    const bulls=stocks.filter(s=>s.is_bull).sort((a,b)=>b.mscore-a.mscore).slice(0,3);
-    const bears=stocks.filter(s=>!s.is_bull).sort((a,b)=>b.mscore-a.mscore).slice(0,3);
-
-    // Sector header — show ETF score if available
-    const secInfo=secScoreMap[secName];
-    const secBadge=secInfo
-      ? `<span style="background:${secInfo.isBull?"#EAF3DE":"#FCEBEB"};color:${secInfo.isBull?"#175404":"#791F1F"};font-size:11px;padding:2px 8px;border-radius:4px;font-family:var(--mono);font-weight:600">${secInfo.isBull?"▲":"▼"} ${secInfo.score}/100</span>`
-      : "";
-
-    const makeRow=s=>{
-      const v=s.volData;
-      const surge=v?v.surgeVs20:s.vol_surge;
-      const sc=s.mscore>=75?"#175404":s.mscore>=58?"#3B6D11":s.mscore>=42?"#633806":"#791F1F";
-      const segColor=(x)=>x>=16?"#639922":x>=12?"#97C459":x>=8?"#EF9F27":x>=4?"#E24B4A":"#A32D2D";
-      const segs=[s.f1,s.f2,s.f3,s.f4,s.f5].map(x=>`<div class="ms-seg" style="background:${segColor(x)};height:6px;flex:1;border-radius:1px"></div>`).join("");
-      const flowBdg=v&&v.pcRatio!=null
-        ?`<span style="font-size:10px;font-family:var(--mono);color:${v.pcRatio<1?"#3B6D11":v.pcRatio>1.3?"#791F1F":"#888"}">${v.pcRatio<1?"▲C":"▼P"} ${v.pcRatio}</span>`
-        :"";
-      const unusualBdg=v?.topUnusual?.length?`<span style="font-size:10px;color:#633806;font-family:var(--mono)">🔔${v.topUnusual.length}</span>`:"";
-      return `<tr class="${s.is_bull?"bull-row":"bear-row"}" onclick="if(typeof launchIntelligence==='function')launchIntelligence(S.stocks.find(x=>x.symbol==='${s.symbol}'))" style="cursor:pointer" title="Click to analyze ${s.symbol}">
-        <td style="font-family:var(--mono);font-weight:700;font-size:13px">${s.symbol}</td>
-        <td style="font-family:var(--mono)">$${s.price.toFixed(2)}</td>
-        <td style="font-family:var(--mono);color:${s.change_pct>=0?"#3B6D11":"#791F1F"}">${s.change_pct>=0?"+":""}${s.change_pct.toFixed(2)}%</td>
-        <td style="font-family:var(--mono);color:${s.change_5d>=0?"#3B6D11":"#791F1F"}">${s.change_5d>=0?"+":""}${s.change_5d.toFixed(2)}%</td>
-        <td style="font-family:var(--mono);color:${surge>=1.5?"#3B6D11":surge>=1.2?"#854F0B":"#888"}">${surge}×</td>
-        <td>
-          <div style="display:flex;align-items:center;gap:5px">
-            <div style="display:flex;gap:1px;flex:1;min-width:70px">${segs}</div>
-            <span style="font-size:12px;font-weight:700;font-family:var(--mono);color:${sc}">${s.mscore}</span>
-          </div>
-        </td>
-        <td>${flowBdg} ${unusualBdg}</td>
-      </tr>`;
-    };
-
-    return `<div class="card" style="margin-bottom:14px">
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:0.5px solid var(--b);background:var(--bg2);flex-wrap:wrap">
-        <div style="font-size:14px;font-weight:600">${secName}</div>
-        ${secBadge}
-        <span style="font-size:11px;color:var(--text2)">${stocks.length} stock${stocks.length!==1?"s":""} passed filters</span>
-        <span style="margin-left:auto;font-size:11px;color:var(--text2)">▲ ${bulls.length} bull · ▼ ${bears.length} bear (top 3 each shown)</span>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:0.5px solid var(--b)">
-        <!-- Bulls -->
-        <div style="border-right:0.5px solid var(--b)">
-          <div style="padding:6px 12px;background:#EAF3DE22;border-bottom:0.5px solid var(--b)">
-            <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#3B6D11">▲ Top Bulls</span>
-          </div>
-          ${bulls.length?`<table style="width:100%;border-collapse:collapse;font-size:12px">
-            <thead><tr style="border-bottom:0.5px solid var(--b)">
-              <th style="padding:5px 10px;text-align:left;font-size:9px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.07em">Symbol</th>
-              <th style="padding:5px 10px;text-align:left;font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.07em">Price</th>
-              <th style="padding:5px 10px;text-align:left;font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.07em">1D</th>
-              <th style="padding:5px 10px;text-align:left;font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.07em">5D</th>
-              <th style="padding:5px 10px;text-align:left;font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.07em">Vol×</th>
-              <th style="padding:5px 10px;text-align:left;font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.07em">Score /100</th>
-              <th style="padding:5px 10px;text-align:left;font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.07em">Flow</th>
-            </tr></thead>
-            <tbody>${bulls.map(makeRow).join("")}</tbody>
-          </table>`:`<div style="padding:16px 12px;font-size:12px;color:var(--text2)">No bullish stocks in this sector passed filters</div>`}
-        </div>
-        <!-- Bears -->
-        <div>
-          <div style="padding:6px 12px;background:#FCEBEB22;border-bottom:0.5px solid var(--b)">
-            <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#791F1F">▼ Top Bears</span>
-          </div>
-          ${bears.length?`<table style="width:100%;border-collapse:collapse;font-size:12px">
-            <thead><tr style="border-bottom:0.5px solid var(--b)">
-              <th style="padding:5px 10px;text-align:left;font-size:9px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.07em">Symbol</th>
-              <th style="padding:5px 10px;text-align:left;font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.07em">Price</th>
-              <th style="padding:5px 10px;text-align:left;font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.07em">1D</th>
-              <th style="padding:5px 10px;text-align:left;font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.07em">5D</th>
-              <th style="padding:5px 10px;text-align:left;font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.07em">Vol×</th>
-              <th style="padding:5px 10px;text-align:left;font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.07em">Score /100</th>
-              <th style="padding:5px 10px;text-align:left;font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.07em">Flow</th>
-            </tr></thead>
-            <tbody>${bears.map(makeRow).join("")}</tbody>
-          </table>`:`<div style="padding:16px 12px;font-size:12px;color:var(--text2)">No bearish stocks in this sector passed filters</div>`}
-        </div>
-      </div>
-    </div>`;
-  }).join("");
-
-  const sectorLabel=sectorSel==="all"?`All ${sectorsToShow.length} sectors`:sectorSel;
-  return `<div style="margin-bottom:10px;font-size:12px;color:var(--text2)">
-    Showing: <strong>${sectorLabel}</strong> · ${S.stocks.filter(s=>s.is_bull).length} bulls · ${S.stocks.filter(s=>!s.is_bull).length} bears · click any stock to run Trade Intelligence
-  </div>${blocks}`;
 }
 
 /* ── Option Spread Entry cards ──────────── */
@@ -1808,135 +1614,6 @@ function rVolume(){
     IV skew = OTM put IV vs call IV · Data: Polygon Options Starter (OI, vol, greeks, IV — no live quotes)
   </div>`;
 }
-/* ══════════════════════════════════════════
-   DAILY SCHEDULER — AUTO-RUN AT 7:00 AM
-   ══════════════════════════════════════════ */
-
-const SCHEDULE_HOUR = 7;   // 7:00 AM
-const SCHEDULE_MIN  = 0;
-const COUNTDOWN_SEC = 10;  // seconds to show countdown before auto-firing
-
-let _countdownTimer = null;
-let _scheduleTimer  = null;
-let _autoRunCancelled = false;
-
-function schedNextTime() {
-  const now = new Date();
-  const next = new Date(now);
-  next.setHours(SCHEDULE_HOUR, SCHEDULE_MIN, 0, 0);
-  if (next <= now) next.setDate(next.getDate() + 1); // tomorrow
-  return next;
-}
-
-function formatDuration(ms) {
-  const h = Math.floor(ms / 3_600_000);
-  const m = Math.floor((ms % 3_600_000) / 60_000);
-  if (h > 0) return `${h}h ${m}m`;
-  const s = Math.floor((ms % 60_000) / 1000);
-  return m > 0 ? `${m}m ${s}s` : `${s}s`;
-}
-
-function updateScheduleBar() {
-  const next   = schedNextTime();
-  const now    = new Date();
-  const ms     = next - now;
-  const el     = document.getElementById("schedNextRun");
-  const lastEl = document.getElementById("lastRunWrap");
-
-  if (el) {
-    el.textContent = `Next auto-scan: ${next.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})} at 7:00 AM — in ${formatDuration(ms)}`;
-  }
-
-  // Show last run time from localStorage
-  const lastRun = localStorage.getItem("lpw_lastRun");
-  if (lastEl && lastRun) {
-    const d = new Date(lastRun);
-    lastEl.textContent = `Last scan: ${d.toLocaleDateString("en-US",{month:"short",day:"numeric"})} at ${d.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"})}`;
-  }
-}
-
-function startCountdown() {
-  if (_autoRunCancelled) return;
-  const wrap = document.getElementById("countdownWrap");
-  const num  = document.getElementById("countdownNum");
-  if (!wrap) return;
-  wrap.style.display = "flex";
-  let remaining = COUNTDOWN_SEC;
-  if (num) num.textContent = remaining;
-
-  _countdownTimer = setInterval(() => {
-    remaining--;
-    if (num) num.textContent = remaining;
-    if (remaining <= 0) {
-      clearInterval(_countdownTimer);
-      wrap.style.display = "none";
-      if (!_autoRunCancelled && S.phase === "idle") {
-        console.log("[LPW] Auto-run triggered at", new Date().toLocaleTimeString());
-        localStorage.setItem("lpw_lastRun", new Date().toISOString());
-        run();
-      }
-    }
-  }, 1000);
-}
-
-function cancelAutoRun() {
-  _autoRunCancelled = true;
-  clearInterval(_countdownTimer);
-  const wrap = document.getElementById("countdownWrap");
-  if (wrap) wrap.style.display = "none";
-  const el = document.getElementById("schedNextRun");
-  if (el) el.textContent += " (auto-run cancelled for this session)";
-}
-
-function scheduleNextRun() {
-  const next = schedNextTime();
-  const ms   = next - new Date();
-  console.log(`[LPW] Next auto-run scheduled in ${formatDuration(ms)} at ${next.toLocaleTimeString()}`);
-  _scheduleTimer = setTimeout(() => {
-    startCountdown();
-    // Re-schedule for next day after this fires
-    setTimeout(scheduleNextRun, 60_000);
-  }, ms);
-}
-
-function checkIfShouldAutoRunNow() {
-  // If opened between 7:00 AM and 7:15 AM and hasn't run today → auto-start
-  const now  = new Date();
-  const h    = now.getHours();
-  const m    = now.getMinutes();
-  const isWindow = (h === SCHEDULE_HOUR && m < 15);
-
-  // Check if already ran today
-  const lastRun  = localStorage.getItem("lpw_lastRun");
-  const ranToday = lastRun && new Date(lastRun).toDateString() === now.toDateString();
-
-  if (isWindow && !ranToday) {
-    console.log("[LPW] Within 7 AM window, no prior run today — starting countdown");
-    startCountdown();
-  } else if (isWindow && ranToday) {
-    console.log("[LPW] Already ran today — skipping auto-start");
-  }
-}
-
-// ── Init on page load ────────────────────────────────
-document.addEventListener("DOMContentLoaded", () => {
-  updateScheduleBar();
-  setInterval(updateScheduleBar, 60_000); // refresh countdown display every minute
-  checkIfShouldAutoRunNow();              // fire if opened at 7 AM
-  scheduleNextRun();                      // schedule future auto-runs
-});
-
-// ── Save last run timestamp when scan completes ──────
-const _origRun = run;
-window.run = async function() {
-  _autoRunCancelled = false;
-  const wrap = document.getElementById("countdownWrap");
-  if (wrap) wrap.style.display = "none";
-  await _origRun();
-  localStorage.setItem("lpw_lastRun", new Date().toISOString());
-  updateScheduleBar();
-};
-
 function renderLog(){
   const lb=document.getElementById("logEl");if(!S.log.length){lb.innerHTML="";return;}
   const cl={ok:"#3B6D11",error:"#791F1F",warn:"#854F0B",info:"var(--text2)"};
